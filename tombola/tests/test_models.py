@@ -63,6 +63,30 @@ class GameModelTest(TestCase):
 
     def test_minutes_remaining_method(self):
         game = Game.objects.create(deadline=time() + 365)
+        game2 = Game.objects.create(deadline=time() + 55)
         self.assertEqual(6, game.minutes_remaining())
-        game = Game.objects.create(deadline=time() + 55)
-        self.assertEqual(0, game.minutes_remaining())
+        self.assertEqual(0, game2.minutes_remaining())
+
+    def test_tickets_bought_method(self):
+        game = Game.objects.create(deadline=time() + 300)
+        Ticket.objects.create(game=game)
+        Ticket.objects.create(game=game)
+        self.assertEqual(game.tickets_bought(), 2)
+
+    def test_ticket_price_method(self):
+        game = Game.objects.create(deadline=time() + 300)
+        game2 = Game.objects.create(deadline=time() + 300)
+
+        for i in range(1100):
+            Ticket.objects.create(game=game2)
+
+        self.assertEqual(game.current_ticket_price(), 1)
+        self.assertEqual(game2.current_ticket_price(), 1.12)
+
+    def test_ticket_odds_method(self):
+        game = Game.objects.create(deadline=time() + 300)
+        for i in range(100):
+            Ticket.objects.create(game=game)
+
+        self.assertEqual(game.ticket_odds(1), 1)
+        self.assertEqual(game.ticket_odds(33), 33)
