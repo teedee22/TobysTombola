@@ -5,6 +5,8 @@ from selenium.webdriver.common.keys import Keys
 import time
 import os
 
+MAX_WAIT = 10
+
 
 class FunctionalTest(LiveServerTestCase):
     def setUp(self):
@@ -15,6 +17,16 @@ class FunctionalTest(LiveServerTestCase):
 
     def tearDown(self):
         self.browser.quit()
+
+    def wait_for(self, fn):
+        start_time = time.time()
+        while True:
+            try:
+                return fn()
+            except (AssertionError, WebDriverException) as e:
+                if time.time() - start_time > MAX_WAIT:
+                    raise e
+                time.sleep(0.5)
 
 
 class TestSetupTombola(FunctionalTest):
@@ -34,21 +46,26 @@ class TestSetupTombola(FunctionalTest):
         inputbox = self.browser.find_element_by_id("id_time_limit")
         inputbox.send_keys(3)
         inputbox.send_keys(Keys.ENTER)
-        time.sleep(1)
 
         # The game takes them to a new screen showing the Tombola is in progress
-        tombola_game_url = self.browser.current_url
-        self.assertRegex(tombola_game_url, "tombolas/.+")
+        self.wait_for(
+            lambda: self.assertRegex(self.browser.current_url, "tombolas/.+",)
+        )
+
+        # The game takes them to a new screen showing the Tombola is in progress
 
         # The game displays that the tombola is in progress
         self.assertIn(
             "in progress", self.browser.find_element_by_tag_name("h1").text
         )
-        time.sleep(2)
-        self.browser.refresh()
-        time.sleep(1)
+        time.sleep(3)
 
-        self.assertIn(
-            "Finished", self.browser.find_element_by_tag_name("h1").text
+        # After the time limit has elapsed, they refresh the page
+        self.browser.refresh()
+        # The page shows that the tombola has finished
+        self.wait_for(
+            lambda: self.assertIn(
+                "Finished", self.browser.find_element_by_tag_name("h1").text
+            )
         )
         self.fail("finish the test")
