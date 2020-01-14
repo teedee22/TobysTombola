@@ -1,3 +1,9 @@
 from django.db import models
 
-# Create your models here.
+
+class Game(models.Model):
+    deadline = models.IntegerField()
+
+
+class Ticket(models.Model):
+    game = models.ForeignKey(Game, null=True, on_delete=models.CASCADE)

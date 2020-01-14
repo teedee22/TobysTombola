@@ -38,4 +38,5 @@ class TestSetupTombola(FunctionalTest):
         inputbox.send_keys(Keys.ENTER)
 
         # The game takes them to a new screen showing the Tombola is in progress
+
         self.fail("finish the test")
