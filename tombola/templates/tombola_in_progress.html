@@ -1,2 +1,5 @@
-<html><h1>Tombola in progress</h1></html>
-<p>{{ game.deadline }}</p>
+<html><h1>Tombola {{ game.id }} in progress</h1>
+<p>{{ time_remaining.minutes }} minute{% if time_remaining.minutes > 1 %}s{% endif %}
+    and {{ time_remaining.seconds }} second{% if time_remaining.seconds > 1 %}s{% endif %}
+    remaining</p>
+</html>

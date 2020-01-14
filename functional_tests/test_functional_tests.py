@@ -58,6 +58,13 @@ class TestSetupTombola(FunctionalTest):
         self.assertIn(
             "in progress", self.browser.find_element_by_tag_name("h1").text
         )
+        # The game displays how many minutes and seconds there are left
+        self.assertIn(
+            "second", self.browser.find_element_by_tag_name("html").text
+        )
+        self.assertIn(
+            "minute", self.browser.find_element_by_tag_name("html").text
+        )
         time.sleep(3)
 
         # After the time limit has elapsed, they refresh the page

@@ -22,4 +22,14 @@ urlpatterns = [
     path("", views.HomePage, name="home_page"),
     path("tombolas/new", views.NewTombola, name="new_tombola"),
     path("tombolas/<int:game_id>/", views.ViewTombola, name="view_tombola"),
+    path(
+        "tombolas/<int:game_id>/inprogress/",
+        views.TombolaInProgress,
+        name="tombola_in_progress",
+    ),
+    path(
+        "tombolas/<int:game_id>/finished/",
+        views.TombolaFinished,
+        name="tombola_finished",
+    ),
 ]

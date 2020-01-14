@@ -15,18 +15,54 @@ class NewTombolaTest(TestCase):
         self.assertEqual(Game.objects.count(), 1)
 
     def test_redirects_after_POST(self):
-        response = self.client.post("/tombolas/new", data={"time_limit": 5})
+        response = self.client.post(
+            "/tombolas/new", data={"time_limit": 5}, follow=True
+        )
         new_game = Game.objects.first()
-        self.assertRedirects(response, f"/tombolas/{new_game.id}/")
+        self.assertRedirects(response, f"/tombolas/{new_game.id}/inprogress/")
 
 
 class ViewTombolaTest(TestCase):
-    def test_uses_correct_template_in_progress(self):
+    def test_redirects_to_in_progress(self):
         game = Game.objects.create(deadline=(time() + 100))
         response = self.client.get(f"/tombolas/{game.id}/")
-        self.assertTemplateUsed(response, "tombola_in_progress.html")
+        self.assertRedirects(response, f"/tombolas/{game.id}/inprogress/")
 
-    def test_uses_correct_template_when_finished(self):
+    def test_redirects_to_finished_when_finished(self):
         game = Game.objects.create(deadline=(time() - 1))
         response = self.client.get(f"/tombolas/{game.id}/")
+        self.assertRedirects(response, f"/tombolas/{game.id}/finished/")
+
+
+class TombolaInProgressTest(TestCase):
+    def test_calculates_and_displays_seconds_and_minutes_correctly(self):
+        game = Game.objects.create(deadline=time() + 65)
+        response = self.client.get(f"/tombolas/{game.id}/inprogress/")
+        self.assertContains(response, "1 minute")
+        self.assertContains(response, "seconds")
+
+    def test_uses_correct_template(self):
+        game = Game.objects.create(deadline=time() + 60)
+        response = self.client.get(f"/tombolas/{game.id}/inprogress/")
+        self.assertTemplateUsed(response, "tombola_in_progress.html")
+
+    def test_redirects_if_deadline_has_passed(self):
+        game = Game.objects.create(deadline=time() - 1)
+        response = self.client.get(
+            f"/tombolas/{game.id}/inprogress/", follow=True
+        )
+        self.assertRedirects(response, f"/tombolas/{game.id}/finished/")
+
+
+class TombolaFinishedTest(TestCase):
+    def test_redirects_if_deadline_has_not_passed(self):
+        game = Game.objects.create(deadline=time() + 60)
+        response = self.client.get(
+            f"/tombolas/{game.id}/finished/", follow=True
+        )
+        self.assertRedirects(response, f"/tombolas/{game.id}/inprogress/")
+
+    def test_uses_correct_template(self):
+        game = Game.objects.create(deadline=time() - 1)
+        response = self.client.get(f"/tombolas/{game.id}/finished/")
         self.assertTemplateUsed(response, "tombola_finished.html")
