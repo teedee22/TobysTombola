@@ -2,4 +2,9 @@
 <p>{{ time_remaining.minutes }} minute{% if time_remaining.minutes > 1 %}s{% endif %}
     and {{ time_remaining.seconds }} second{% if time_remaining.seconds > 1 %}s{% endif %}
     remaining</p>
+
+    <form method="POST" action="/tombolas/{{game.id}}/buy/">
+        <input type="number" name="ticket_quantity" id="id_ticket_quantity" placeholder="quantity" autofocus/>
+        {% csrf_token %}
+    </form>
 </html>

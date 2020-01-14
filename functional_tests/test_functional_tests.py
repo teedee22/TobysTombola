@@ -90,4 +90,16 @@ class TestSetupTombola(FunctionalTest):
 
         # User notices an input box in which they can input the number of
         # tickets they wish to buy.
-        self.fail("finish the test")
+        inputbox = self.browser.find_element_by_id("id_ticket_quantity")
+        inputbox.send_keys(1)
+        inputbox.send_keys(Keys.ENTER)
+
+        # The page refreshes to show their purchase was succesful
+        self.wait_for(
+            lambda: self.assertIn(
+                "successful", self.browser.find_element_by_tag_name("h1").text
+            )
+        )
+
+        # The page returns the id of the ticket bought
+        self.assertIn("1", self.browser.find_element_by_tag_name("td").text)

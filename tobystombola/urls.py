@@ -32,4 +32,5 @@ urlpatterns = [
         views.TombolaFinished,
         name="tombola_finished",
     ),
+    path("tombolas/<int:game_id>/buy/", views.BuyTicket, name="buy_ticket"),
 ]

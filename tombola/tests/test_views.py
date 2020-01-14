@@ -54,6 +54,36 @@ class TombolaInProgressTest(TestCase):
         self.assertRedirects(response, f"/tombolas/{game.id}/finished/")
 
 
+class BuyTicketTest(TestCase):
+    def test_uses_correct_template_after_POST(self):
+        game = Game.objects.create(deadline=time() + 10)
+        response = self.client.post(
+            f"/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": 1},
+            follow=True,
+        )
+        self.assertTemplateUsed(response, "bought.html")
+
+    def test_returns_ticket_single_id(self):
+        game = Game.objects.create(deadline=time() + 10)
+        response = self.client.post(
+            f"/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": 1},
+            follow=True,
+        )
+        self.assertContains(response, 1)
+
+    def test_returns_multiple_ticket_ids(self):
+        game = Game.objects.create(deadline=time() + 10)
+        response = self.client.post(
+            f"/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": 5},
+            follow=True,
+        )
+        for ticket in range(5):
+            self.assertContains(response, ticket + 1)
+
+
 class TombolaFinishedTest(TestCase):
     def test_redirects_if_deadline_has_not_passed(self):
         game = Game.objects.create(deadline=time() + 60)

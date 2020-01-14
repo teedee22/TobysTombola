@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from .models import Game
+from .models import Game, Ticket
 from time import time
 
 
@@ -39,6 +39,16 @@ def TombolaInProgress(request, game_id):
         "tombola_in_progress.html",
         {"game": game, "time_remaining": time_remaining},
     )
+
+
+def BuyTicket(request, game_id):
+    """purchases tickets and displays their ids"""
+    game = Game.objects.get(id=game_id)
+    ticket_ids = []
+    for ticket in range(int(request.POST["ticket_quantity"])):
+        new_ticket = Ticket.objects.create(game=game)
+        ticket_ids.append(new_ticket.id)
+    return render(request, "bought.html", {"ticket_ids": ticket_ids})
 
 
 def TombolaFinished(request, game_id):
