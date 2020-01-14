@@ -58,7 +58,11 @@ class GameModelTest(TestCase):
     def test_seconds_remaining_method(self):
         game = Game.objects.create(deadline=time() + 65)
         self.assertEqual(5, game.seconds_remaining())
+        game = Game.objects.create(deadline=time() + 55)
+        self.assertEqual(55, game.seconds_remaining())
 
     def test_minutes_remaining_method(self):
         game = Game.objects.create(deadline=time() + 365)
         self.assertEqual(6, game.minutes_remaining())
+        game = Game.objects.create(deadline=time() + 55)
+        self.assertEqual(0, game.minutes_remaining())

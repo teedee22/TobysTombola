@@ -13,7 +13,7 @@ class Game(models.Model):
 
     def seconds_remaining(self):
         """checks how many seconds are remaining"""
-        return round(self.deadline - time()) % 6
+        return round(self.deadline - time()) % 60
 
     def minutes_remaining(self):
         """Checks how many mins are remaining"""

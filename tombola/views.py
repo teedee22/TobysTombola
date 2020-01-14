@@ -1,7 +1,6 @@
 from django.shortcuts import redirect, render
 from .models import Game
 from time import time
-import math
 
 
 def HomePage(request):
