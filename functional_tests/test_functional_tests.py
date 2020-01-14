@@ -30,13 +30,25 @@ class TestSetupTombola(FunctionalTest):
         )
 
         # They are invited to start a new tombola and enter a time limit
-        # They enter 5 into the box and hit enter
+        # They enter 3 into the box and hit enter
         inputbox = self.browser.find_element_by_id("id_time_limit")
-        inputbox.send_keys(5)
+        inputbox.send_keys(3)
         inputbox.send_keys(Keys.ENTER)
         time.sleep(1)
 
         # The game takes them to a new screen showing the Tombola is in progress
         tombola_game_url = self.browser.current_url
         self.assertRegex(tombola_game_url, "tombolas/.+")
+
+        # The game displays that the tombola is in progress
+        self.assertIn(
+            "in progress", self.browser.find_element_by_tag_name("h1").text
+        )
+        time.sleep(2)
+        self.browser.refresh()
+        time.sleep(1)
+
+        self.assertIn(
+            "Finished", self.browser.find_element_by_tag_name("h1").text
+        )
         self.fail("finish the test")

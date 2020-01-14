@@ -16,4 +16,7 @@ def NewTombola(request):
 
 def ViewTombola(request, game_id):
     game = Game.objects.get(id=game_id)
-    return render(request, "tombola_in_progress.html", {"game": game})
+    if time() < game.deadline:
+        return render(request, "tombola_in_progress.html", {"game": game})
+    else:
+        return render(request, "tombola_finished.html")

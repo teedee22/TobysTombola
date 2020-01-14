@@ -1,5 +1,6 @@
 from django.test import TestCase
 from tombola.models import Game, Ticket
+from time import time
 
 
 class HomePageTest(TestCase):
@@ -20,7 +21,12 @@ class NewTombolaTest(TestCase):
 
 
 class ViewTombolaTest(TestCase):
-    def test_uses_correct_template(self):
-        game = Game.objects.create(deadline=0)
+    def test_uses_correct_template_in_progress(self):
+        game = Game.objects.create(deadline=(time() + 100))
         response = self.client.get(f"/tombolas/{game.id}/")
         self.assertTemplateUsed(response, "tombola_in_progress.html")
+
+    def test_uses_correct_template_when_finished(self):
+        game = Game.objects.create(deadline=(time() - 1))
+        response = self.client.get(f"/tombolas/{game.id}/")
+        self.assertTemplateUsed(response, "tombola_finished.html")
