@@ -4,5 +4,8 @@
 </head>
 <body>
     <h1>Toby's Tombola</h1>
-    <input type="number" name="time_limit" id="id_time_limit" placeholder="time limit" autofocus/>
+    <form method="POST" action="/tombolas/new">
+        <input type="number" name="time_limit" id="id_time_limit" placeholder="time limit" autofocus/>
+        {% csrf_token %}
+    </form>
 </body>

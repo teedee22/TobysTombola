@@ -20,4 +20,6 @@ from tombola import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.HomePage, name="home_page"),
+    path("tombolas/new", views.NewTombola, name="new_tombola"),
+    path("tombolas/<int:game_id>/", views.ViewTombola, name="view_tombola"),
 ]
