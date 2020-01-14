@@ -19,20 +19,20 @@ def NewTombola(request):
 def ViewTombola(request, game_id):
     """View decides if game is in progress or finished"""
     game = Game.objects.get(id=game_id)
-    if time() < game.deadline:
-        return redirect(f"/tombolas/{game.id}/inprogress/")
-    else:
+    if game.is_finished():
         return redirect(f"/tombolas/{game.id}/finished/")
+    else:
+        return redirect(f"/tombolas/{game.id}/inprogress/")
 
 
 def TombolaInProgress(request, game_id):
-    """ View calculates how much time is left and pass it to template"""
+    """View calculates how much time is left and pass it to template"""
     game = Game.objects.get(id=game_id)
-    if time() > game.deadline:
+    if game.is_finished():
         return redirect(f"/tombolas/{game.id}/")
     time_remaining = {
-        "seconds": round(game.deadline - time()) % 6,
-        "minutes": math.floor((game.deadline - time()) / 60),
+        "seconds": game.seconds_remaining,
+        "minutes": game.minutes_remaining,
     }
 
     return render(
@@ -46,6 +46,6 @@ def TombolaFinished(request, game_id):
     """View displays that the tombola has finished. It will handle logic for
     winning ticket"""
     game = Game.objects.get(id=game_id)
-    if time() < game.deadline:
+    if not game.is_finished():
         return redirect(f"/tombolas/{game.id}/")
     return render(request, "tombola_finished.html")

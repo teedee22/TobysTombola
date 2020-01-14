@@ -75,4 +75,19 @@ class TestSetupTombola(FunctionalTest):
                 "Finished", self.browser.find_element_by_tag_name("h1").text
             )
         )
+
+    def test_user_can_buy_tickets_and_receives_correct_information(self):
+        # A new Tombola is set up with a 10 second time window
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element_by_id("id_time_limit")
+        inputbox.send_keys(10)
+        inputbox.send_keys(Keys.ENTER)
+
+        # The user can now see that the tombola is in in progress
+        self.wait_for(
+            lambda: self.assertRegex(self.browser.current_url, "tombolas/.+",)
+        )
+
+        # User notices an input box in which they can input the number of
+        # tickets they wish to buy.
         self.fail("finish the test")

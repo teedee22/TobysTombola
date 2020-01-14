@@ -4,24 +4,6 @@ from tombola.models import Game, Ticket
 
 
 class GameModelAndTicketTest(TestCase):
-    def test_game_saves_times_and_can_retrieve_them(self):
-        game = Game()
-        current_time = time()
-        current_time_plus_five_seconds = time() + 5
-        game.deadline = round(current_time_plus_five_seconds)
-        game.save()
-
-        # Check current time is before 5 second deadline
-        saved_game = Game.objects.first()
-        self.assertTrue(
-            saved_game.deadline == round(current_time_plus_five_seconds)
-        )
-        self.assertTrue(current_time < saved_game.deadline)
-
-        # Check 6 seconds from now is past the deadline
-        new_time = time() + 6
-        self.assertFalse(new_time < saved_game.deadline)
-
     def test_saving_and_retrieving_tickets(self):
         game = Game(deadline=5)
         game.save()
@@ -46,3 +28,37 @@ class GameModelAndTicketTest(TestCase):
         self.assertEqual(first_saved_ticket.game, game)
         self.assertEqual(second_saved_ticket.id, 2)
         self.assertEqual(second_saved_ticket.game, game)
+
+
+class GameModelTest(TestCase):
+    def test_game_saves_times_and_can_retrieve_them(self):
+        game = Game()
+        current_time = time()
+        current_time_plus_five_seconds = time() + 5
+        game.deadline = round(current_time_plus_five_seconds)
+        game.save()
+
+        # Check current time is before 5 second deadline
+        saved_game = Game.objects.first()
+        self.assertTrue(
+            saved_game.deadline == round(current_time_plus_five_seconds)
+        )
+        self.assertTrue(current_time < saved_game.deadline)
+
+        # Check 6 seconds from now is past the deadline
+        new_time = time() + 6
+        self.assertFalse(new_time < saved_game.deadline)
+
+    def test_is_finished_method(self):
+        game = Game.objects.create(deadline=time() - 1)
+        self.assertTrue(game.is_finished())
+        game2 = Game.objects.create(deadline=time() + 10)
+        self.assertFalse(game2.is_finished())
+
+    def test_seconds_remaining_method(self):
+        game = Game.objects.create(deadline=time() + 65)
+        self.assertEqual(5, game.seconds_remaining())
+
+    def test_minutes_remaining_method(self):
+        game = Game.objects.create(deadline=time() + 365)
+        self.assertEqual(6, game.minutes_remaining())
