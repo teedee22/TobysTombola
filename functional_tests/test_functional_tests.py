@@ -5,8 +5,6 @@ from selenium.webdriver.common.keys import Keys
 import time
 import os
 
-MAX_WAIT = 10
-
 
 class FunctionalTest(LiveServerTestCase):
     def setUp(self):
