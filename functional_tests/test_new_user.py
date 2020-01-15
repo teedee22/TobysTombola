@@ -1,32 +1,6 @@
-from django.test import LiveServerTestCase
-from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
+from .base import FunctionalTest
 import time
-import os
-
-MAX_WAIT = 10
-
-
-class FunctionalTest(LiveServerTestCase):
-    def setUp(self):
-        self.browser = webdriver.Firefox()
-        staging_server = os.environ.get("STAGING_SERVER")
-        if staging_server:
-            self.live_server_url = "http://" + staging_server
-
-    def tearDown(self):
-        self.browser.quit()
-
-    def wait_for(self, fn):
-        start_time = time.time()
-        while True:
-            try:
-                return fn()
-            except (AssertionError, WebDriverException) as e:
-                if time.time() - start_time > MAX_WAIT:
-                    raise e
-                time.sleep(0.5)
 
 
 class TestNewUser(FunctionalTest):
@@ -110,17 +84,4 @@ class TestNewUser(FunctionalTest):
         # The page returns the total cost of the tickets bought
         self.assertIn(
             "total cost", self.browser.find_element_by_tag_name("h2").text
-        )
-
-
-class LayoutAndStyling(FunctionalTest):
-    def test_layout_and_styling(self):
-        # New user goes to the homepage
-        self.browser.get(self.live_server_url)
-        self.browser.set_window_size(1024, 768)
-
-        # She notices the inbox box is centered
-        inputbox = self.browser.find_element_by_id("id_time_limit")
-        self.assertAlmostEqual(
-            inputbox.location["x"] + inputbox.size["width"] / 2, 512, delta=10
         )
