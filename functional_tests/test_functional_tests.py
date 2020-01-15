@@ -29,7 +29,7 @@ class FunctionalTest(LiveServerTestCase):
                 time.sleep(0.5)
 
 
-class TestSetupTombola(FunctionalTest):
+class TestNewUser(FunctionalTest):
     def test_user_can_access_homepage(self):
         # The person running the tournament goes to the website,
         # as no tombola is running they have the option to start one
@@ -56,7 +56,7 @@ class TestSetupTombola(FunctionalTest):
 
         # The game displays that the tombola is in progress
         self.assertIn(
-            "in progress", self.browser.find_element_by_tag_name("h1").text
+            "in progress", self.browser.find_element_by_id("in_progress").text
         )
         # The game displays how many minutes and seconds there are left
         self.assertIn(
@@ -72,7 +72,7 @@ class TestSetupTombola(FunctionalTest):
         # The page shows that the tombola has finished
         self.wait_for(
             lambda: self.assertIn(
-                "Finished", self.browser.find_element_by_tag_name("h1").text
+                "Finished", self.browser.find_element_by_id("finished").text,
             )
         )
 
@@ -97,7 +97,8 @@ class TestSetupTombola(FunctionalTest):
         # The page refreshes to show their purchase was succesful
         self.wait_for(
             lambda: self.assertIn(
-                "successful", self.browser.find_element_by_tag_name("h1").text
+                "successful",
+                self.browser.find_element_by_id("purchase_success").text,
             )
         )
 
@@ -108,5 +109,18 @@ class TestSetupTombola(FunctionalTest):
         self.assertIn("odds", self.browser.find_element_by_tag_name("h3").text)
         # The page returns the total cost of the tickets bought
         self.assertIn(
-            "total cost", self.browser.find_element_by_tag_name("h1").text
+            "total cost", self.browser.find_element_by_tag_name("h2").text
+        )
+
+
+class LayoutAndStyling(FunctionalTest):
+    def test_layout_and_styling(self):
+        # New user goes to the homepage
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+
+        # She notices the inbox box is centered
+        inputbox = self.browser.find_element_by_id("id_time_limit")
+        self.assertAlmostEqual(
+            inputbox.location["x"] + inputbox.size["width"] / 2, 512, delta=10
         )

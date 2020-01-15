@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render
-from .models import Game, Ticket
+from .models import Game
 from time import time
 
 

@@ -1,11 +1,13 @@
-<html>
-<head>
-    <title>Toby's Tombola</title>
-</head>
-<body>
-    <h1>Toby's Tombola</h1>
+{% extends 'base.html' %}
+{% block top_info_block %}
+<p>How long would you like the tombola to run for? (in seconds)</p>
+{% endblock %}
+{% block form_block %}
     <form method="POST" action="/tombolas/new">
         <input type="number" name="time_limit" id="id_time_limit" placeholder="time limit" autofocus/>
         {% csrf_token %}
     </form>
-</body>
+{% endblock %}
+{% block bottom_info_block %}
+<p>press enter to start tombola</p>
+{% endblock %}
