@@ -90,3 +90,12 @@ class GameModelTest(TestCase):
 
         self.assertEqual(game.ticket_odds(1), 1)
         self.assertEqual(game.ticket_odds(33), 33)
+
+    def test_multiple_ticket_prices_method(self):
+        game1 = Game.objects.create(deadline=time() + 30)
+        game2 = Game.objects.create(deadline=time() + 30)
+        for i in range(100):
+            Ticket.objects.create(game=game2)
+
+        self.assertEqual(game1.multiple_ticket_prices(100), 100)
+        self.assertEqual(game2.multiple_ticket_prices(100), 100.99)

@@ -34,6 +34,19 @@ class Game(models.Model):
         """calculates players odds so far of winning"""
         return round((ticket_quantity / self.tickets_bought()) * 100, 2)
 
+    def multiple_ticket_prices(self, quantity):
+        """Calculates total cost of tickets bought"""
+        tickets_bought = self.tickets_bought()
+        total_cost = 0
+        for i in range(quantity):
+            if tickets_bought < 101:
+                total_cost += 1
+            else:
+                compound = tickets_bought // 100
+                total_cost += 1.01 ** compound
+            tickets_bought += 1
+        return round(total_cost, 2)
+
 
 class Ticket(models.Model):
     game = models.ForeignKey(Game, null=True, on_delete=models.CASCADE)
