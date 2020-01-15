@@ -62,6 +62,14 @@ class Game(models.Model):
                 self.save()
         return self.winner
 
+    def buy_tickets(self, ticket_quantity: int) -> list:
+        """Buy multiple tickets and return a list of their ids"""
+        ticket_ids = []
+        for ticket in range(ticket_quantity):
+            new_ticket = Ticket.objects.create(game=self)
+            ticket_ids.append(new_ticket.id)
+        return ticket_ids
+
 
 class Ticket(models.Model):
     game = models.ForeignKey(Game, null=True, on_delete=models.CASCADE)

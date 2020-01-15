@@ -46,14 +46,10 @@ def BuyTicket(request, game_id):
     game = Game.objects.get(id=game_id)
     if request.method == "GET" or game.is_finished():
         return redirect(f"/tombolas/{game.id}")
-    ticket_ids = []
     ticket_quantity = int(request.POST["ticket_quantity"])
     total_cost = game.multiple_ticket_prices(ticket_quantity)
+    ticket_ids = game.buy_tickets(ticket_quantity)
 
-    ## TODO move this into model logic
-    for ticket in range(ticket_quantity):
-        new_ticket = Ticket.objects.create(game=game)
-        ticket_ids.append(new_ticket.id)
     return render(
         request,
         "bought.html",
