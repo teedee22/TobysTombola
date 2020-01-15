@@ -30,8 +30,8 @@ def TombolaInProgress(request, game_id):
     if game.is_finished():
         return redirect(f"/tombolas/{game.id}/")
     time_remaining = {
-        "seconds": game.seconds_remaining,
-        "minutes": game.minutes_remaining,
+        "seconds": game.seconds_remaining(),
+        "minutes": game.minutes_remaining(),
     }
 
     return render(
@@ -44,11 +44,25 @@ def TombolaInProgress(request, game_id):
 def BuyTicket(request, game_id):
     """purchases tickets and displays their ids"""
     game = Game.objects.get(id=game_id)
+    if request.method == "GET" or game.is_finished():
+        return redirect(f"/tombolas/{game.id}")
     ticket_ids = []
-    for ticket in range(int(request.POST["ticket_quantity"])):
+    ticket_quantity = int(request.POST["ticket_quantity"])
+    total_cost = game.multiple_ticket_prices(ticket_quantity)
+
+    ## TODO move this into model logic
+    for ticket in range(ticket_quantity):
         new_ticket = Ticket.objects.create(game=game)
         ticket_ids.append(new_ticket.id)
-    return render(request, "bought.html", {"ticket_ids": ticket_ids})
+    return render(
+        request,
+        "bought.html",
+        {
+            "ticket_ids": ticket_ids,
+            "total_cost": total_cost,
+            "ticket_odds": game.ticket_odds(len(ticket_ids)),
+        },
+    )
 
 
 def TombolaFinished(request, game_id):
@@ -57,4 +71,6 @@ def TombolaFinished(request, game_id):
     game = Game.objects.get(id=game_id)
     if not game.is_finished():
         return redirect(f"/tombolas/{game.id}/")
-    return render(request, "tombola_finished.html")
+    return render(
+        request, "tombola_finished.html", {"winner": game.calculate_winner()}
+    )

@@ -83,6 +83,41 @@ class BuyTicketTest(TestCase):
         for ticket in range(5):
             self.assertContains(response, ticket + 1)
 
+    def test_returns_ticket_odds(self):
+        game = Game.objects.create(deadline=time() + 10)
+        Ticket.objects.create(game=game)
+        response = self.client.post(
+            f"/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": 3},
+            follow=True,
+        )
+        self.assertContains(response, "75.0%")
+
+    def test_returns_ticket_prices(self):
+        game = Game.objects.create(deadline=time() + 10)
+        response = self.client.post(
+            f"/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": 102},
+            follow=True,
+        )
+        self.assertContains(response, "£102.01")
+
+    def test_cannot_buy_if_game_is_finished(self):
+        game = Game.objects.create(deadline=time() - 1)
+        response = self.client.post(
+            f"/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": 102},
+            follow=True,
+        )
+
+        self.assertRedirects(response, f"/tombolas/{game.id}/finished/")
+
+    def test_GET_redirects(self):
+        game = Game.objects.create(deadline=time() + 30)
+        response = self.client.get(f"/tombolas/{game.id}/buy/", follow=True,)
+
+        self.assertRedirects(response, f"/tombolas/{game.id}/inprogress/")
+
 
 class TombolaFinishedTest(TestCase):
     def test_redirects_if_deadline_has_not_passed(self):
@@ -94,5 +129,11 @@ class TombolaFinishedTest(TestCase):
 
     def test_uses_correct_template(self):
         game = Game.objects.create(deadline=time() - 1)
-        response = self.client.get(f"/tombolas/{game.id}/finished/")
+        response = self.client.get(f"/tombolas/{game.id}/finished/", data={})
         self.assertTemplateUsed(response, "tombola_finished.html")
+
+    def test_displays_winning_ticket(self):
+        game = Game.objects.create(deadline=time())
+        Ticket.objects.create(game=game)
+        response = self.client.get(f"/tombolas/{game.id}/finished/")
+        self.assertContains(response, "1")

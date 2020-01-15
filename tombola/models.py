@@ -54,7 +54,12 @@ class Game(models.Model):
         already calculated"""
         if not self.winner:
             all_tickets = Ticket.objects.filter(game=self)
-            self.winner = random.choice([ticket.id for ticket in all_tickets])
+            # Check tickets were bought
+            if len(all_tickets) > 1:
+                self.winner = random.choice(
+                    [ticket.id for ticket in all_tickets]
+                )
+                self.save()
         return self.winner
 
 

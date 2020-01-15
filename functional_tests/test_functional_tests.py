@@ -105,5 +105,8 @@ class TestSetupTombola(FunctionalTest):
         self.assertIn("1", self.browser.find_element_by_tag_name("td").text)
 
         # The page returns the odds of the ticket(s) bought winning
-
+        self.assertIn("odds", self.browser.find_element_by_tag_name("h3").text)
         # The page returns the total cost of the tickets bought
+        self.assertIn(
+            "total cost", self.browser.find_element_by_tag_name("h1").text
+        )
