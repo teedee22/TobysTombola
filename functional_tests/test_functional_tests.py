@@ -103,3 +103,7 @@ class TestSetupTombola(FunctionalTest):
 
         # The page returns the id of the ticket bought
         self.assertIn("1", self.browser.find_element_by_tag_name("td").text)
+
+        # The page returns the odds of the ticket(s) bought winning
+
+        # The page returns the total cost of the tickets bought

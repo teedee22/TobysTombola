@@ -99,3 +99,11 @@ class GameModelTest(TestCase):
 
         self.assertEqual(game1.multiple_ticket_prices(100), 100)
         self.assertEqual(game2.multiple_ticket_prices(100), 100.99)
+
+    def test_calculate_winner_method(self):
+        game = Game.objects.create(deadline=time() + 30)
+        for i in range(100):
+            Ticket.objects.create(game=game)
+        a = game.calculate_winner()
+        b = game.calculate_winner()
+        self.assertEqual(a, b)
