@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block top_info_block %}
-<h1 id="in_progress">Tombola {{ game.id }} in progress</h1>
+<a href="/tombolas/{{game.id}}/"><h1 id="in_progress">Tombola {{ game.id }} in progress</h1></a>
 <p>{{ time_remaining.minutes }} minute{% if time_remaining.minutes > 1 %}s{% endif %}
     and {{ time_remaining.seconds }} second{% if time_remaining.seconds > 1 %}s{% endif %}
     remaining</p>

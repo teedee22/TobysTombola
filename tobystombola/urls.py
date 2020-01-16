@@ -38,4 +38,5 @@ urlpatterns = [
         views.ApiBuyTicket,
         name="api_buy_ticket",
     ),
+    path("tombolas/", views.HomePage),
 ]

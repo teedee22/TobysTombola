@@ -6,7 +6,8 @@ from time import time
 
 
 def HomePage(request):
-    return render(request, "home.html")
+    tombolas = Game.objects.all().order_by("-id")
+    return render(request, "home.html", {"tombolas": tombolas})
 
 
 def NewTombola(request):
@@ -54,6 +55,10 @@ def TombolaInProgress(request, game_id):
 def BuyTicket(request, game_id):
     """purchases tickets and displays their ids"""
     game = Game.objects.get(id=game_id)
+    time_remaining = {
+        "seconds": game.seconds_remaining(),
+        "minutes": game.minutes_remaining(),
+    }
     if request.method == "GET" or game.is_finished():
         return redirect(f"/tombolas/{game.id}")
     try:
@@ -62,13 +67,22 @@ def BuyTicket(request, game_id):
         return render(
             request,
             "tombola_in_progress.html",
-            {"error": "No ticket number entered", "game": game},
+            {
+                "error": "No ticket number entered",
+                "game": game,
+                "time_remaining": time_remaining,
+            },
         )
+
     if ticket_quantity < 1:
         return render(
             request,
             "tombola_in_progress.html",
-            {"error": "Enter a positive number of tickets", "game": game},
+            {
+                "error": "Enter a positive number of tickets",
+                "game": game,
+                "time_remaining": time_remaining,
+            },
         )
     total_cost = game.multiple_ticket_prices(ticket_quantity)
     ticket_ids = game.buy_tickets(ticket_quantity)
@@ -80,6 +94,7 @@ def BuyTicket(request, game_id):
             "ticket_ids": ticket_ids,
             "total_cost": total_cost,
             "ticket_odds": game.ticket_odds(len(ticket_ids)),
+            "game": game,
         },
     )
 

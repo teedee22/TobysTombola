@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block top_info_block %}
-<h1 id="in_progress">Tombola {{ game.id }} in progress</h1>
+<a href="/tombolas/{{game.id}}/"><h1 id="in_progress">Tombola {{ game.id }} in progress</h1></a>
 <h2 id="purchase_success">Purchase successful of {{ ticket_ids|length }} tickets for a total cost of £{{ total_cost }} </h1>
 <h3>Your odds of winning are {{ ticket_odds }}%</h3>
 {% endblock %}

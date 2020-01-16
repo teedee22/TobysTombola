@@ -12,4 +12,21 @@
 {% endblock %}
 {% block bottom_info_block %}
 <p>press enter to start tombola</p>
+
+<h4>Tombola status</h4>
+<table class="table">
+<a href="/tombolas/{{game.id}}/">
+
+{% for tombola in tombolas %}
+        <tr>
+            <td><a href="/tombolas/{{tombola.id}}/">Tombola {{tombola.id}}</a><td>
+            {% if tombola.is_finished %}
+            <td>Winner: {{ tombola.calculate_winner }}</td>
+            {% else %}
+            <td>{{ tombola.minutes_remaining }} mins & {{ tombola.seconds_remaining }} secs left</td>
+            {% endif %}
+        </tr>
+
+    {% endfor %}
+</table>
 {% endblock %}
