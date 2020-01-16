@@ -1,8 +1,10 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from .models import Game
 from time import time
+import json
 
 
 def HomePage(request):
@@ -99,13 +101,6 @@ def BuyTicket(request, game_id):
     )
 
 
-def ApiBuyTicket(request, game_id):
-    game = Game.objects.get(id=game_id)
-    if request.method == "GET" or game.is_finished():
-        data = {"error": "error"}
-        return JsonResponse(data)
-
-
 def TombolaFinished(request, game_id):
     """View displays that the tombola has finished. It will handle logic for
     winning ticket"""
@@ -117,3 +112,33 @@ def TombolaFinished(request, game_id):
         "tombola_finished.html",
         {"winner": game.calculate_winner(), "game": game},
     )
+
+
+@csrf_exempt
+def ApiBuyTicket(request, game_id):
+    game = Game.objects.get(id=game_id)
+    if request.method == "GET":
+        data = {"error": "use POST request"}
+        return JsonResponse(data)
+    if game.is_finished():
+        data = {"error": "Tombola is finished"}
+        return JsonResponse(data)
+    incoming_data = json.loads(request.body.decode("utf-8"))
+    try:
+        incoming_data["ticket_quantity"]
+    except ValueError:
+        data = {"error": "Invalid ticket quantity"}
+        return JsonResponse(data)
+    if incoming_data["ticket_quantity"] < 1:
+        data = {"error": "Enter postive ticket quantity"}
+        return JsonResponse(data)
+    ticket_quantity = incoming_data["ticket_quantity"]
+    total_cost = game.multiple_ticket_prices(ticket_quantity)
+    ticket_ids = game.buy_tickets(ticket_quantity)
+    ticket_odds = game.ticket_odds(ticket_quantity)
+    data = {
+        "total_cost": total_cost,
+        "ticket_ids": ticket_ids,
+        "ticket_odds": ticket_odds,
+    }
+    return JsonResponse(data)

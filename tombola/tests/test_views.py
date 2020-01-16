@@ -156,3 +156,37 @@ class TombolaFinishedTest(TestCase):
         Ticket.objects.create(game=game)
         response = self.client.get(f"/tombolas/{game.id}/finished/")
         self.assertContains(response, "1")
+
+
+class ApiBuyTicketTest(TestCase):
+    def test_GET_produces_error(self):
+        game = Game.objects.create(deadline=time() + 30)
+        response = self.client.get(f"/api/tombolas/{game.id}/buy", follow=True)
+        self.assertContains(response, "error")
+
+    def test_finished_game_produces_error(self):
+        game = Game.objects.create(deadline=time() - 1)
+        response = self.client.post(
+            f"/api/tombolas/{game.id}/buy", follow=True
+        )
+        self.assertContains(response, "error")
+
+    def test_accepts_post(self):
+        game = Game.objects.create(deadline=time() + 10)
+        response = self.client.post(
+            f"/api/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": 3},
+            content_type="application/json",
+            follow=True,
+        )
+        self.assertContains(response, 3)
+
+    def test_negative_tickets_raises_error(self):
+        game = Game.objects.create(deadline=time() + 10)
+        response = self.client.post(
+            f"/api/tombolas/{game.id}/buy/",
+            data={"ticket_quantity": -3},
+            content_type="application/json",
+            follow=True,
+        )
+        self.assertContains(response, "error")
