@@ -9,24 +9,13 @@
     <body>
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col text-center">
+                <div class="jumbotron text-center">
                     <h1>Toby's Tombola</h1>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col text-center">
+
                     {% block top_info_block %}
                     {% endblock %}
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col text-center">
                     {% block form_block %}
-                    {% endblock %}
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col text-center">
+                    {% endblock %}        
                     {% block bottom_info_block %}
                     {% endblock %}
                 </div>
