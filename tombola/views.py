@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from .models import Game
@@ -10,9 +11,17 @@ def HomePage(request):
 
 def NewTombola(request):
     """View creates a new tombola with a configurable amount of time"""
-    game = Game.objects.create(
-        deadline=(time() + int(request.POST["time_limit"]))
-    )
+    error = None
+    try:
+        game = Game.objects.create(
+            deadline=(time() + int(request.POST["time_limit"]))
+        )
+    except ValueError or ValidationError:
+        error = "You can't start a game without a time limit"
+        return render(request, "home.html", {"error": error})
+    if int(request.POST["time_limit"]) < 1:
+        error = "Your game must have a positive time limit"
+        return render(request, "home.html", {"error": error})
     return redirect(f"/tombolas/{game.id}/")
 
 
@@ -47,7 +56,20 @@ def BuyTicket(request, game_id):
     game = Game.objects.get(id=game_id)
     if request.method == "GET" or game.is_finished():
         return redirect(f"/tombolas/{game.id}")
-    ticket_quantity = int(request.POST["ticket_quantity"])
+    try:
+        ticket_quantity = int(request.POST["ticket_quantity"])
+    except ValueError:
+        return render(
+            request,
+            "tombola_in_progress.html",
+            {"error": "No ticket number entered", "game": game},
+        )
+    if ticket_quantity < 1:
+        return render(
+            request,
+            "tombola_in_progress.html",
+            {"error": "Enter a positive number of tickets", "game": game},
+        )
     total_cost = game.multiple_ticket_prices(ticket_quantity)
     ticket_ids = game.buy_tickets(ticket_quantity)
 
@@ -76,5 +98,7 @@ def TombolaFinished(request, game_id):
     if not game.is_finished():
         return redirect(f"/tombolas/{game.id}/")
     return render(
-        request, "tombola_finished.html", {"winner": game.calculate_winner()}
+        request,
+        "tombola_finished.html",
+        {"winner": game.calculate_winner(), "game": game},
     )

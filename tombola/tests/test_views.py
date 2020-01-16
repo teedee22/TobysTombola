@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils.html import escape
 from tombola.models import Game, Ticket
 from time import time
 
@@ -20,6 +21,13 @@ class NewTombolaTest(TestCase):
         )
         new_game = Game.objects.first()
         self.assertRedirects(response, f"/tombolas/{new_game.id}/inprogress/")
+
+    def test_validation_errors_end_up_on_home_page(self):
+        response = self.client.post(f"/tombolas/new", data={"time_limit": ""})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "home.html")
+        expected_error = escape("You can't start a game without a time limit")
+        self.assertContains(response, expected_error)
 
 
 class ViewTombolaTest(TestCase):
@@ -52,6 +60,17 @@ class TombolaInProgressTest(TestCase):
             f"/tombolas/{game.id}/inprogress/", follow=True
         )
         self.assertRedirects(response, f"/tombolas/{game.id}/finished/")
+
+    def test_validation_errors_end_up_on_inprogress_page(self):
+        game = Game.objects.create(deadline=time() + 30)
+        response = self.client.post(
+            f"/tombolas/{game.id}/buy",
+            data={"ticket_quantity": ""},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "tombola_in_progress.html")
 
 
 class BuyTicketTest(TestCase):

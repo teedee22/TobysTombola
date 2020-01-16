@@ -10,6 +10,7 @@
     <input type="number" name="ticket_quantity" id="id_ticket_quantity" placeholder="quantity" autofocus/>
     {% csrf_token %}
 </form>
+{% if error %}<p id="error" class="text-danger">Error: {{ error }}</p>{% endif %}
 {% endblock %}
 {% block bottom_info_block %}
 <p>press enter to buy ticket(s)</p>

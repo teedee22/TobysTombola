@@ -12,9 +12,8 @@ class GameAndTicketValidation(FunctionalTest):
         # The home page refreshes, and there is an error message saying
         # that the time limit cannot be blank
         self.wait_for(
-            lambda: self.assertEqual(
-                self.browser.find_element_by_id("error").text,
-                "You must enter a valid time limit",
+            lambda: self.assertIn(
+                "time limit", self.browser.find_element_by_id("error").text
             )
         )
 
@@ -23,9 +22,8 @@ class GameAndTicketValidation(FunctionalTest):
         inputbox.send_keys(-1)
         inputbox.send_keys(Keys.ENTER)
         self.wait_for(
-            lambda: self.assertEqual(
-                self.browser.find_element_by_id("error").text,
-                "You must enter a valid time limit",
+            lambda: self.assertIn(
+                "time limit", self.browser.find_element_by_id("error").text
             )
         )
 
@@ -33,3 +31,33 @@ class GameAndTicketValidation(FunctionalTest):
         inputbox = self.browser.find_element_by_id("id_time_limit")
         inputbox.send_keys(20)
         inputbox.send_keys(Keys.ENTER)
+
+        # She is now on the tombola in progress home page
+        self.wait_for(
+            lambda: self.assertIn(
+                "in progress",
+                self.browser.find_element_by_id("in_progress").text,
+            )
+        )
+        # She attempts to buy tickets without inputting a value
+        inputbox = self.browser.find_element_by_id(
+            "id_ticket_quantity"
+        ).send_keys(Keys.ENTER)
+
+        # The page refreshes, and there is an error message
+        self.wait_for(
+            lambda: self.assertIn(
+                "No ticket number entered",
+                self.browser.find_element_by_id("error").text,
+            )
+        )
+        # She tries again with a ticket amount, another error appears.
+        inputbox = self.browser.find_element_by_id("id_ticket_quantity")
+        inputbox.send_keys(-1)
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for(
+            lambda: self.assertIn(
+                "Enter a positive number",
+                self.browser.find_element_by_id("error").text,
+            )
+        )
