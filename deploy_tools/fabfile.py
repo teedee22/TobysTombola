@@ -3,7 +3,7 @@ from fabric.contrib.files import append, exists
 from fabric.api import cd, env, local, run
 
 
-REPO_URL = "https://github.com/teedee22/DannysGame.git"
+REPO_URL = "https://github.com/teedee22/TobysTombola.git"
 
 
 def deploy():
