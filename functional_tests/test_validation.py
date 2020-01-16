@@ -13,7 +13,7 @@ class GameAndTicketValidation(FunctionalTest):
         # that the time limit cannot be blank
         self.wait_for(
             lambda: self.assertEqual(
-                self.browser.find_element_by_css_selector(".has-error").text,
+                self.browser.find_element_by_id("error").text,
                 "You must enter a valid time limit",
             )
         )
@@ -24,7 +24,7 @@ class GameAndTicketValidation(FunctionalTest):
         inputbox.send_keys(Keys.ENTER)
         self.wait_for(
             lambda: self.assertEqual(
-                self.browser.find_element_by_css_selector(".has-error").text,
+                self.browser.find_element_by_id("error").text,
                 "You must enter a valid time limit",
             )
         )

@@ -33,4 +33,9 @@ urlpatterns = [
         name="tombola_finished",
     ),
     path("tombolas/<int:game_id>/buy/", views.BuyTicket, name="buy_ticket"),
+    path(
+        "api/tombolas/<int:game_id>/buy/",
+        views.ApiBuyTicket,
+        name="api_buy_ticket",
+    ),
 ]

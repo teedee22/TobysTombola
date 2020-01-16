@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from .models import Game
 from time import time
@@ -59,6 +60,13 @@ def BuyTicket(request, game_id):
             "ticket_odds": game.ticket_odds(len(ticket_ids)),
         },
     )
+
+
+def ApiBuyTicket(request, game_id):
+    game = Game.objects.get(id=game_id)
+    if request.method == "GET" or game.is_finished():
+        data = {"error": "error"}
+        return JsonResponse(data)
 
 
 def TombolaFinished(request, game_id):
