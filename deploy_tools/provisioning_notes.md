@@ -2,6 +2,14 @@ Provisioning a new site
 =======================
 eg, on Ubuntu:
 
+sudo ufw allow OpenSSH
+sudo sudo ufw status
+sudo apt-get update && apt-get upgrade
+sudo apt-get install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx
+
+sudo -H pip3 install --upgrade pip
+sudo -H pip3 install virtualenv
+
     sudo add-apt-repository ppa:deadsnakes/ppa
     sudo apt update
     sudo apt install nginx git python36 python3.6-venv
@@ -12,11 +20,11 @@ eg, on Ubuntu:
 * replace DOMAIN with, e.g., staging.my-domain.com
 
 cat ./deploy_tools/nginx.template.conf \
-    | sed "s/DOMAIN/tombola.diveondown.com/g" \
-    | sudo tee /etc/nginx/sites-available/tombola.diveondown.com
+    | sed "s/DOMAIN/pop22.westeurope.cloudapp.azure.com/g" \
+    | sudo tee /etc/nginx/sites-available/pop22.westeurope.cloudapp.azure.com
 
-    sudo ln -s /etc/nginx/sites-available/tombola.diveondown.com \
-    /etc/nginx/sites-enabled/tombola.diveondown.com
+    sudo ln -s /etc/nginx/sites-available/pop22.westeurope.cloudapp.azure.com \
+    /etc/nginx/sites-enabled/pop22.westeurope.cloudapp.azure.com
 
 ## Systemd service
 
@@ -24,18 +32,19 @@ cat ./deploy_tools/nginx.template.conf \
 * replace DOMAIN with, e.g., staging.my-domain.com
 
 cat ./deploy_tools/gunicorn-systemd.template.service \
-    | sed "s/DOMAIN/tombola.diveondown.com/g" \
-    | sudo tee /etc/systemd/system/tombola.diveondown.com.service
+    | sed "s/DOMAIN/pop22.westeurope.cloudapp.azure.com/g" \
+    | sudo tee /etc/systemd/system/pop22.westeurope.cloudapp.azure.com.service
 
 cat ./deploy_tools/gunicorn.systemd.template.socket \
-    | sed "s/DOMAIN/tombola.diveondown.com/g" \
-    | sudo tee /etc/systemd/system/tombola.diveondown.com.socket
+    | sed "s/DOMAIN/pop22.westeurope.cloudapp.azure.com/g" \
+    | sudo tee /etc/systemd/system/pop22.westeurope.cloudapp.azure.com.socket
 
 sudo systemctl daemon-reload
 sudo systemctl reload nginx
-sudo systemctl enable tombola.diveondown.com
-sudo systemctl start tombola.diveondown.com
+sudo systemctl enable pop22.westeurope.cloudapp.azure.com
+sudo systemctl start pop22.westeurope.cloudapp.azure.com
 sudo systemctl restart nginx
+sudo ufw allow 'Nginx Full'
 
 ## Folder structure:
 
