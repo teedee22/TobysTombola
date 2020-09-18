@@ -41,8 +41,8 @@ cat ./deploy_tools/gunicorn.systemd.template.socket \
 
 sudo systemctl daemon-reload
 sudo systemctl reload nginx
-sudo systemctl enable pop22.westeurope.cloudapp.azure.com
-sudo systemctl start pop22.westeurope.cloudapp.azure.com
+sudo systemctl enable tombola.diveondown.com
+sudo systemctl start tombola.diveondown.com
 sudo systemctl restart nginx
 sudo ufw allow 'Nginx Full'
 

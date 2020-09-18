@@ -1,0 +1,18 @@
+---
+    # webservers is a group in /etc/ansible/hosts file
+  - hosts: webservers
+    vars:
+      site: tombola.diveondown.com
+    remote_user: root
+  
+    tasks:
+      - name: gunicorn - stop
+        systemd:
+            name: "{{ site }}"
+            state: stopped
+
+      - name: gunicorn - start
+        systemd:
+            name: "{{ site }}"
+            state: started
+  
