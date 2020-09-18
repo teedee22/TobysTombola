@@ -2,17 +2,36 @@
     # webservers is a group in /etc/ansible/hosts file
   - hosts: webservers
     vars:
-      site: tombola.diveondown.com
+      domain: tombola.diveondown.com
     remote_user: root
   
     tasks:
+    #   - name: gunicorn service template
+    #     template:
+    #       src: "templates/gunicorn-systemd.template.service.j2"
+    #       dest: "/etc/systemd/system/{{ domain }}.service"
+    #       mode: '0644'
+
+    #   - name: gunicorn socket template
+    #     template:
+    #       src: "templates/gunicorn.systemd.template.socket.j2"
+    #       dest: "/etc/systemd/system/{{ domain }}.socket"
+    #       mode: "0644"
+    
+    #   - name: nginx template
+    #     template:
+    #       src: "templates/nginx.template.conf.j2"
+    #       dest: "/etc/nginx/sites-available/{{ domain }}"
+    #       mode: "0644"
+
       - name: gunicorn - stop
         systemd:
-            name: "{{ site }}"
+            name: "{{ domain }}"
             state: stopped
 
       - name: gunicorn - start
         systemd:
-            name: "{{ site }}"
+            name: "{{ domain }}"
             state: started
-  
+
+      

@@ -1,0 +1,56 @@
+---
+    # webservers is a group in /etc/ansible/hosts file
+  - hosts: webservers
+    vars:
+      domain: tombala2.diveondown.com
+    remote_user: root
+  
+    tasks:
+      - name: nginx template
+        template:
+          src: "templates/nginx.template.conf.j2"
+          dest: "/etc/nginx/sites-available/{{ domain }}"
+          mode: "0644"
+      
+      - name: create symbolic link for nginx
+        file:
+          src: "/etc/nginx/sites-available/{{ domain }}"
+          dest: "/etc/nginx/sites-enabled/{{ domain }}"
+          state: link
+      
+      - name: reload daemon
+        systemd:
+          daemon-reload: yes
+      
+      - name: reload nginx
+        systemd:
+          name: nginx
+          state: reloaded
+
+      - name: gunicorn service template
+        template:
+          src: "templates/gunicorn-systemd.template.service.j2"
+          dest: "/etc/systemd/system/{{ domain }}.service"
+          mode: '0644'
+
+      - name: gunicorn socket template
+        template:
+          src: "templates/gunicorn.systemd.template.socket.j2"
+          dest: "/etc/systemd/system/{{ domain }}.socket"
+          mode: "0644"
+
+      - name: gunicorn - stop
+        systemd:
+            name: "{{ domain }}"
+            state: stopped
+
+      - name: gunicorn - start
+        systemd:
+            name: "{{ domain }}"
+            state: started
+
+      - name: restart nginx
+        systemd:
+          name: nginx
+          state: restarted
+      

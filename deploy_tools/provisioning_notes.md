@@ -20,11 +20,11 @@ sudo -H pip3 install virtualenv
 * replace DOMAIN with, e.g., staging.my-domain.com
 
 cat ./deploy_tools/nginx.template.conf \
-    | sed "s/DOMAIN/pop22.westeurope.cloudapp.azure.com/g" \
-    | sudo tee /etc/nginx/sites-available/pop22.westeurope.cloudapp.azure.com
+    | sed "s/DOMAIN/tombola.diveondown.com/g" \
+    | sudo tee /etc/nginx/sites-available/tombola.diveondown.com
 
-    sudo ln -s /etc/nginx/sites-available/pop22.westeurope.cloudapp.azure.com \
-    /etc/nginx/sites-enabled/pop22.westeurope.cloudapp.azure.com
+sudo ln -s /etc/nginx/sites-available/tombola.diveondown.com \
+/etc/nginx/sites-enabled/tombola.diveondown.com
 
 ## Systemd service
 
@@ -32,12 +32,12 @@ cat ./deploy_tools/nginx.template.conf \
 * replace DOMAIN with, e.g., staging.my-domain.com
 
 cat ./deploy_tools/gunicorn-systemd.template.service \
-    | sed "s/DOMAIN/pop22.westeurope.cloudapp.azure.com/g" \
-    | sudo tee /etc/systemd/system/pop22.westeurope.cloudapp.azure.com.service
+    | sed "s/DOMAIN/tombola.diveondown.com/g" \
+    | sudo tee /etc/systemd/system/tombola.diveondown.com.service
 
 cat ./deploy_tools/gunicorn.systemd.template.socket \
-    | sed "s/DOMAIN/pop22.westeurope.cloudapp.azure.com/g" \
-    | sudo tee /etc/systemd/system/pop22.westeurope.cloudapp.azure.com.socket
+    | sed "s/DOMAIN/tombola.diveondown.com/g" \
+    | sudo tee /etc/systemd/system/tombola.diveondown.com.socket
 
 sudo systemctl daemon-reload
 sudo systemctl reload nginx

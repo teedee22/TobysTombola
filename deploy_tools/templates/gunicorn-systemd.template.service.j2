@@ -1,0 +1,18 @@
+[Unit]
+Description=gunicorn daemon
+Requires={{ domain }}.socket
+After=network.target
+
+[Service]
+User=toby
+Group=www-data
+WorkingDirectory=/home/toby/sites/{{ domain }}
+EnvironmentFile=/home/toby/sites/{{ domain }}/.env
+ExecStart=/home/toby/sites/{{ domain }}/env/bin/gunicorn \
+          --access-logfile - \
+          --workers 3 \
+          --bind unix:/run/{{ domain }}.sock \
+          tobystombola.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
